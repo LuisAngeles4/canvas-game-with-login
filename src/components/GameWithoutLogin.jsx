@@ -1,16 +1,10 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import "./GameScriptStyle.css";
-import { UserAuth } from '../context/AuthContext'
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../api/firebase.config"; 
 
-const GameScript = () => {
-    const {user} = UserAuth();
+const GameWithoutLogin = () => {
     const canvasRef = useRef(null);
-    const [score, setScore] = useState(0);
 
     useEffect(() => {
-        // console.log(user.email);
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
@@ -27,7 +21,11 @@ const GameScript = () => {
         circleBackgroundImage.src = "../../assets/fondo-circle.png"
 
         const cursorImage = new Image();
-        cursorImage.src = "../../assets/fondo-cursor.png"
+        cursorImage.src = "../../assets/fondo-cursor.png" // Cambia esto a la ruta de tu imagen de cursor
+
+        cursorImage.onload = () => {
+            console.log("Imagen del cursor cargada");
+        };
 
         let mouseX = 0;
         let mouseY = 0;
@@ -155,7 +153,7 @@ const GameScript = () => {
                 if (!stillInBounds) {
                     arrayCircle.splice(i, 1);
                     outOfBoundsCirclesCount++;
-                    // console.log(`Circles out of bounds: ${outOfBoundsCirclesCount}`);
+                    console.log(`Circles out of bounds: ${outOfBoundsCirclesCount}`);
                     i--;
                 }
             }
@@ -181,15 +179,13 @@ const GameScript = () => {
             ctx.font = "20px Arial";
             ctx.fillStyle = "#fff";
             ctx.fillText(`Puntuación: ${clickedCirclesCount}`, 70, 20);
-            ctx.fillText(`GOLES EN CONTRA: ${outOfBoundsCirclesCount}`, 90, 55);
-            // ctx.fillText(`Usuario: ${user.displayName}`, 500, 60);
+            ctx.fillText(`GOLES EN CONTRA: ${outOfBoundsCirclesCount}`, 70, 55);
+
+            let score = 0;
 
             if (outOfBoundsCirclesCount >= 1 && gameRunning) {
-                // console.log("Juego terminado");
+                console.log("Juego terminado");
                 gameRunning = false;
-                if(clickedCirclesCount > 0) {
-                saveScore(clickedCirclesCount);
-                } // Guarda la puntuación cuando el juego termina
                 resetGame();
             }
 
@@ -204,23 +200,11 @@ const GameScript = () => {
             ctx.closePath();
         };
 
-        const saveScore = async (score) => {
-            try {
-                await addDoc(collection(db, `scores-${user.email}`), {
-                    score: score,
-                    timestamp: new Date()
-                });
-                console.log("Puntuación guardada en Firestore");
-            } catch (e) {
-                console.error("Error al guardar la puntuación: ", e);
-            }
-        };
-
         canvas.addEventListener('mousemove', (event) => {
             const rect = canvas.getBoundingClientRect();
             mouseX = event.clientX - rect.left;
             mouseY = event.clientY - rect.top;
-            // console.log(`Mouse position: (${mouseX}, ${mouseY})`); 
+            console.log(`Mouse position: (${mouseX}, ${mouseY})`);
         });
 
         canvas.addEventListener('click', (event) => {
@@ -247,8 +231,10 @@ const GameScript = () => {
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
             <canvas ref={canvasRef} className="custom-cursor" style={{ border: '1px solid ' }} />
+            
         </div>
+        
     );
 };
 
-export default GameScript;
+export default GameWithoutLogin;

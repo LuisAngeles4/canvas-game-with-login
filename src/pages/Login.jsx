@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Imagen from '../assets/login-img.jpg'
-import ImageProfile from '../assets/profile-img.jpg'
+import Imagen from "../assets/login-img.jpg"
+import ImageProfile from "../assets/profile-img.jpg"
 import { UserAuth } from '../context/AuthContext'
 import {useNavigate } from 'react-router-dom'
 
@@ -36,7 +36,7 @@ export const Login = () => {
             {/* Columna formulario */}
             <div className="col-md-4">
                 <div className="padre">
-                    <div className="card card-body shadow-lg">
+                    <div className="card card-body shadow-dark">
                         <img src={ImageProfile} className='estilo-profile' />
                         <form>
                             <button onClick={iniciar} className='btnform'>Inicia sesión con Google!</button>
