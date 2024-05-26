@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/canvas-game-with-login/static/css/main.240b3601.css",
+    "main.js": "/canvas-game-with-login/static/js/main.9ed154a2.js",
+    "static/js/453.701d8339.chunk.js": "/canvas-game-with-login/static/js/453.701d8339.chunk.js",
+    "static/media/login-img.jpg": "/canvas-game-with-login/static/media/login-img.d9def33b2cd6cffda8ea.jpg",
+    "static/media/profile-img.jpg": "/canvas-game-with-login/static/media/profile-img.cc5e2450f5a074beee67.jpg",
+    "static/media/logo.svg": "/canvas-game-with-login/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/canvas-game-with-login/index.html",
+    "main.240b3601.css.map": "/canvas-game-with-login/static/css/main.240b3601.css.map",
+    "main.9ed154a2.js.map": "/canvas-game-with-login/static/js/main.9ed154a2.js.map",
+    "453.701d8339.chunk.js.map": "/canvas-game-with-login/static/js/453.701d8339.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.240b3601.css",
+    "static/js/main.9ed154a2.js"
+  ]
+}
