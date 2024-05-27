@@ -34,7 +34,7 @@ export const Game = () => {
   
   return (
     <div>
-     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className='container-fluid'>
         <a className='navbar-brand'>Bienvenido! {user.displayName}</a>
         <div className='collapse navbar-collapse' id='navbarNav'>
@@ -49,7 +49,7 @@ export const Game = () => {
           
           </div>
           <form className='d-flex'>
-            <button class="btn btn-light" onClick={cerrarSesiom}>Cerrar Sesión</button>
+            <button className="btn btn-light" onClick={cerrarSesiom}>Cerrar Sesión</button>
           </form>
         </div>
       </nav> 

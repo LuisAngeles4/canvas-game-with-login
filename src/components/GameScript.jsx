@@ -1,16 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./GameScriptStyle.css";
-import { UserAuth } from '../context/AuthContext'
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../api/firebase.config"; 
+import { db } from "../api/firebase.config";
+import { UserAuth } from "../context/AuthContext";
 
 const GameScript = () => {
     const {user} = UserAuth();
     const canvasRef = useRef(null);
     const [score, setScore] = useState(0);
+    const [highScore, setHighScore] = useState(0);
 
     useEffect(() => {
-        // console.log(user.email);
+        // const {user} = UserAuth();
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
 
@@ -20,14 +21,19 @@ const GameScript = () => {
         canvas.height = window_height;
         canvas.width = window_width;
 
+        // Importar imágenes usando require
         const canvasBackgroundImage = new Image();
-        canvasBackgroundImage.src = "../../assets/fondo-canvas.jpg"
-
         const circleBackgroundImage = new Image();
-        circleBackgroundImage.src = "../../assets/fondo-circle.png"
-
         const cursorImage = new Image();
-        cursorImage.src = "../../assets/fondo-cursor.png"
+        // C:\Users\neto1\canvas-game\public\assets\fondo-canvas.jpg
+        try {
+            canvasBackgroundImage.src = require('../assets/fondo-canvas.jpg');
+            circleBackgroundImage.src = require('../assets/fondo-circle.png');
+            cursorImage.src = require('../assets/fondo-cursor.png');
+        } catch (error) {
+            console.error("Error loading images: ", error);
+            return;
+        }
 
         let mouseX = 0;
         let mouseY = 0;
@@ -38,12 +44,27 @@ const GameScript = () => {
         let arrayCircle = [];
         let circleId = 0;
 
-        canvasBackgroundImage.onload = () => {
-            circleBackgroundImage.onload = () => {
+        const checkImagesLoaded = () => {
+            if (
+                canvasBackgroundImage.complete && canvasBackgroundImage.naturalHeight !== 0 &&
+                circleBackgroundImage.complete && circleBackgroundImage.naturalHeight !== 0 &&
+                cursorImage.complete && cursorImage.naturalHeight !== 0
+            ) {
+                console.log("All images loaded successfully.");
                 resetGame();
                 updateCircle();
-            };
+            } else {
+                console.error("Error loading images.");
+            }
         };
+
+        canvasBackgroundImage.onload = checkImagesLoaded;
+        circleBackgroundImage.onload = checkImagesLoaded;
+        cursorImage.onload = checkImagesLoaded;
+
+        canvasBackgroundImage.onerror = () => console.error("Error loading canvas background image.");
+        circleBackgroundImage.onerror = () => console.error("Error loading circle background image.");
+        cursorImage.onerror = () => console.error("Error loading cursor image.");
 
         const resetGame = () => {
             clickedCirclesCount = 0;
@@ -134,7 +155,7 @@ const GameScript = () => {
                 randomY,
                 randomRadius,
                 circleId++,
-                1.5
+                1
             );
             arrayCircle.push(myCircle);
         };
@@ -155,7 +176,7 @@ const GameScript = () => {
                 if (!stillInBounds) {
                     arrayCircle.splice(i, 1);
                     outOfBoundsCirclesCount++;
-                    // console.log(`Circles out of bounds: ${outOfBoundsCirclesCount}`);
+                    console.log(`Circles out of bounds: ${outOfBoundsCirclesCount}`);
                     i--;
                 }
             }
@@ -179,17 +200,16 @@ const GameScript = () => {
             }
 
             ctx.font = "20px Arial";
-            ctx.fillStyle = "#fff";
-            ctx.fillText(`Puntuación: ${clickedCirclesCount}`, 70, 20);
-            ctx.fillText(`GOLES EN CONTRA: ${outOfBoundsCirclesCount}`, 90, 55);
-            // ctx.fillText(`Usuario: ${user.displayName}`, 500, 60);
+            ctx.fillStyle = "#Fff";
+            ctx.fillText(`Puntuación: ${clickedCirclesCount}`, 70, 30);
+            ctx.fillText(`GOLES EN CONTRA: ${outOfBoundsCirclesCount}`, 70, 60);
 
             if (outOfBoundsCirclesCount >= 1 && gameRunning) {
-                // console.log("Juego terminado");
+                console.log("Juego terminado");
                 gameRunning = false;
-                if(clickedCirclesCount > 0) {
+                
                 saveScore(clickedCirclesCount);
-                } // Guarda la puntuación cuando el juego termina
+                 // Guarda la puntuación cuando el juego termina
                 resetGame();
             }
 
@@ -211,6 +231,11 @@ const GameScript = () => {
                     timestamp: new Date()
                 });
                 console.log("Puntuación guardada en Firestore");
+
+                // Actualiza el estado de highScore si la nueva puntuación es mayor
+                if (score > highScore) {
+                    setHighScore(score);
+                }
             } catch (e) {
                 console.error("Error al guardar la puntuación: ", e);
             }
@@ -220,7 +245,7 @@ const GameScript = () => {
             const rect = canvas.getBoundingClientRect();
             mouseX = event.clientX - rect.left;
             mouseY = event.clientY - rect.top;
-            // console.log(`Mouse position: (${mouseX}, ${mouseY})`); 
+             
         });
 
         canvas.addEventListener('click', (event) => {
@@ -242,10 +267,10 @@ const GameScript = () => {
             }
         });
 
-    }, []);
+    }, [highScore]);
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
             <canvas ref={canvasRef} className="custom-cursor" style={{ border: '1px solid ' }} />
         </div>
     );
